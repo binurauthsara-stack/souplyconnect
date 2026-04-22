@@ -97,7 +97,12 @@ const Dashboard = () => {
           <p className="text-muted-foreground mt-2">Live summary of customer feedback collected via QR code.</p>
         </div>
 
-        {n === 0 ? (
+        {loading ? (
+          <div className="mt-10 p-10 rounded-3xl bg-card border border-dashed border-border text-center flex flex-col items-center gap-3">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <p className="text-muted-foreground">Loading responses…</p>
+          </div>
+        ) : n === 0 ? (
           <div className="mt-10 p-10 rounded-3xl bg-card border border-dashed border-border text-center">
             <h2 className="font-semibold text-lg">No responses yet</h2>
             <p className="text-muted-foreground mt-2">
