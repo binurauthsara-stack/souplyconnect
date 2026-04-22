@@ -1,5 +1,4 @@
 import { PageShell } from "@/components/PageShell";
-import { Play } from "lucide-react";
 
 const steps = [
   { n: 1, title: "Add Souply powder into a cup", desc: "Use 2 heaping tablespoons (or one sachet)." },
@@ -36,14 +35,22 @@ const Prepare = () => (
         ))}
       </ol>
 
-      <div className="mt-8 rounded-3xl border-2 border-dashed border-border p-6 text-center bg-card/50">
-        <div className="mx-auto h-14 w-14 rounded-full bg-accent text-accent-foreground grid place-items-center shadow-warm">
-          <Play className="h-6 w-6" fill="currentColor" />
+      <div className="mt-8 rounded-3xl overflow-hidden border border-border shadow-soft bg-card">
+        <video
+          src="/preparation-video.mp4"
+          controls
+          playsInline
+          preload="metadata"
+          className="w-full h-auto block"
+        >
+          Your browser does not support the video tag.
+        </video>
+        <div className="p-4 text-center">
+          <h3 className="font-semibold">Watch the preparation video</h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            A short visual walkthrough of how to prepare your Souply.
+          </p>
         </div>
-        <h3 className="font-semibold mt-3">Preparation video coming soon</h3>
-        <p className="text-sm text-muted-foreground mt-1">
-          A short visual walkthrough will be added here.
-        </p>
       </div>
     </div>
   </PageShell>
