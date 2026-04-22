@@ -1,14 +1,14 @@
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { SouplyLogo } from "@/components/SouplyLogo";
 import { Button } from "@/components/ui/button";
-import { getResponses } from "@/lib/storage";
+import { getResponses, type SurveyResponse } from "@/lib/storage";
 import { clearAdminAuth } from "@/pages/AdminLogin";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
 } from "recharts";
-import { ArrowLeft, Star, Users, TrendingUp, ThumbsUp, LogOut } from "lucide-react";
+import { ArrowLeft, Star, Users, TrendingUp, ThumbsUp, LogOut, Loader2 } from "lucide-react";
 
 const COLORS = ["hsl(110 32% 32%)", "hsl(24 88% 58%)", "hsl(38 92% 55%)", "hsl(110 38% 55%)", "hsl(18 92% 52%)"];
 
@@ -24,8 +24,15 @@ const labels = {
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const responses = getResponses();
+  const [responses, setResponses] = useState<SurveyResponse[]>([]);
+  const [loading, setLoading] = useState(true);
   const n = responses.length;
+
+  useEffect(() => {
+    getResponses()
+      .then(setResponses)
+      .finally(() => setLoading(false));
+  }, []);
 
   const logout = () => {
     clearAdminAuth();
@@ -90,7 +97,12 @@ const Dashboard = () => {
           <p className="text-muted-foreground mt-2">Live summary of customer feedback collected via QR code.</p>
         </div>
 
-        {n === 0 ? (
+        {loading ? (
+          <div className="mt-10 p-10 rounded-3xl bg-card border border-dashed border-border text-center flex flex-col items-center gap-3">
+            <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            <p className="text-muted-foreground">Loading responses…</p>
+          </div>
+        ) : n === 0 ? (
           <div className="mt-10 p-10 rounded-3xl bg-card border border-dashed border-border text-center">
             <h2 className="font-semibold text-lg">No responses yet</h2>
             <p className="text-muted-foreground mt-2">
