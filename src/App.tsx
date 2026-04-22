@@ -12,6 +12,8 @@ import Suggestions from "./pages/Suggestions";
 import ThankYou from "./pages/ThankYou";
 import Prepare from "./pages/Prepare";
 import Dashboard from "./pages/Dashboard";
+import AdminLogin from "./pages/AdminLogin";
+import { RequireAdmin } from "./components/RequireAdmin";
 import NotFound from "./pages/NotFound.tsx";
 
 const queryClient = new QueryClient();
@@ -31,7 +33,15 @@ const App = () => (
           <Route path="/suggestions" element={<Suggestions />} />
           <Route path="/thank-you" element={<ThankYou />} />
           <Route path="/prepare" element={<Prepare />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/admin" element={<AdminLogin />} />
+          <Route
+            path="/dashboard"
+            element={
+              <RequireAdmin>
+                <Dashboard />
+              </RequireAdmin>
+            }
+          />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
