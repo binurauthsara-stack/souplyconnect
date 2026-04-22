@@ -43,21 +43,47 @@ export interface SurveyResponse {
   recommend: RecommendIntent;
 }
 
-const KEY = "souply_responses_v1";
+import { supabase } from "@/integrations/supabase/client";
+
 const DRAFT = "souply_draft_v1";
 
-export function getResponses(): SurveyResponse[] {
-  try {
-    return JSON.parse(localStorage.getItem(KEY) || "[]");
-  } catch {
+export async function getResponses(): Promise<SurveyResponse[]> {
+  const { data, error } = await supabase
+    .from("responses")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.error("Failed to load responses", error);
     return [];
   }
+  return (data ?? []).map((row) => ({
+    id: row.id,
+    createdAt: row.created_at,
+    flavour: row.flavour as Flavour,
+    ratings: row.ratings as Ratings,
+    lifestyle: row.lifestyle as Lifestyle,
+    recommended: row.recommended as Flavour,
+    packaging: row.packaging as PackagingPref,
+    price: row.price as PriceRange,
+    purchase: row.purchase as PurchaseIntent,
+    suggestions: row.suggestions ?? "",
+    recommend: row.recommend as RecommendIntent,
+  }));
 }
 
-export function saveResponse(r: SurveyResponse) {
-  const all = getResponses();
-  all.push(r);
-  localStorage.setItem(KEY, JSON.stringify(all));
+export async function saveResponse(r: Omit<SurveyResponse, "id" | "createdAt">) {
+  const { error } = await supabase.from("responses").insert({
+    flavour: r.flavour,
+    ratings: r.ratings,
+    lifestyle: r.lifestyle,
+    recommended: r.recommended,
+    packaging: r.packaging,
+    price: r.price,
+    purchase: r.purchase,
+    suggestions: r.suggestions,
+    recommend: r.recommend,
+  });
+  if (error) throw error;
 }
 
 export type Draft = Partial<{

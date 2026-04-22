@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import {
   getDraft, setDraft, saveResponse, clearDraft,
-  type RecommendIntent, type SurveyResponse,
+  type RecommendIntent,
 } from "@/lib/storage";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -22,6 +22,7 @@ const Suggestions = () => {
   const navigate = useNavigate();
   const [text, setText] = useState("");
   const [rec, setRec] = useState<RecommendIntent | null>(null);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     const d = getDraft();
@@ -30,29 +31,34 @@ const Suggestions = () => {
     if (d.recommend) setRec(d.recommend);
   }, [navigate]);
 
-  const submit = () => {
+  const submit = async () => {
     if (!rec) { toast.error("Please answer the recommendation question"); return; }
     const d = setDraft({ suggestions: text.trim().slice(0, MAX), recommend: rec });
     if (!d.flavour || !d.ratings || !d.lifestyle || !d.recommended || !d.packaging || !d.price || !d.purchase) {
       toast.error("Some answers are missing");
       return;
     }
-    const r: SurveyResponse = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      flavour: d.flavour,
-      ratings: d.ratings,
-      lifestyle: d.lifestyle,
-      recommended: d.recommended,
-      packaging: d.packaging,
-      price: d.price,
-      purchase: d.purchase,
-      suggestions: d.suggestions ?? "",
-      recommend: d.recommend!,
-    };
-    saveResponse(r);
-    clearDraft();
-    navigate("/thank-you");
+    setSubmitting(true);
+    try {
+      await saveResponse({
+        flavour: d.flavour,
+        ratings: d.ratings,
+        lifestyle: d.lifestyle,
+        recommended: d.recommended,
+        packaging: d.packaging,
+        price: d.price,
+        purchase: d.purchase,
+        suggestions: d.suggestions ?? "",
+        recommend: d.recommend!,
+      });
+      clearDraft();
+      navigate("/thank-you");
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not submit feedback. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -97,8 +103,8 @@ const Suggestions = () => {
           </div>
         </div>
 
-        <Button variant="hero" size="xl" className="w-full mt-8" onClick={submit}>
-          Submit feedback
+        <Button variant="hero" size="xl" className="w-full mt-8" onClick={submit} disabled={submitting}>
+          {submitting ? "Submitting…" : "Submit feedback"}
         </Button>
       </div>
     </PageShell>
