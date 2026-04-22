@@ -19,7 +19,7 @@ const Welcome = () => {
     <div className="min-h-screen bg-gradient-warm">
       <header className="max-w-2xl mx-auto px-4 h-14 flex items-center justify-between">
         <SouplyLogo />
-        <Link to="/dashboard" className="text-xs text-muted-foreground hover:text-primary transition-smooth">
+        <Link to="/admin" className="text-xs text-muted-foreground hover:text-primary transition-smooth">
           Admin
         </Link>
       </header>

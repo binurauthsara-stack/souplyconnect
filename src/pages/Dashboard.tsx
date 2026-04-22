@@ -1,13 +1,14 @@
 import { useMemo } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { SouplyLogo } from "@/components/SouplyLogo";
 import { Button } from "@/components/ui/button";
 import { getResponses } from "@/lib/storage";
+import { clearAdminAuth } from "@/pages/AdminLogin";
 import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   PieChart, Pie, Cell, Legend,
 } from "recharts";
-import { ArrowLeft, Star, Users, TrendingUp, ThumbsUp } from "lucide-react";
+import { ArrowLeft, Star, Users, TrendingUp, ThumbsUp, LogOut } from "lucide-react";
 
 const COLORS = ["hsl(110 32% 32%)", "hsl(24 88% 58%)", "hsl(38 92% 55%)", "hsl(110 38% 55%)", "hsl(18 92% 52%)"];
 
@@ -22,8 +23,14 @@ const labels = {
 };
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const responses = getResponses();
   const n = responses.length;
+
+  const logout = () => {
+    clearAdminAuth();
+    navigate("/", { replace: true });
+  };
 
   const data = useMemo(() => {
     const avg = (k: keyof typeof responses[0]["ratings"]) =>
@@ -65,9 +72,14 @@ const Dashboard = () => {
       <header className="sticky top-0 z-30 backdrop-blur-md bg-background/70 border-b border-border/60">
         <div className="max-w-5xl mx-auto px-4 h-14 flex items-center justify-between">
           <SouplyLogo />
-          <Button asChild variant="ghost" size="sm">
-            <Link to="/"><ArrowLeft className="h-4 w-4" /> Back to app</Link>
-          </Button>
+          <div className="flex items-center gap-1">
+            <Button asChild variant="ghost" size="sm">
+              <Link to="/"><ArrowLeft className="h-4 w-4" /> Back to app</Link>
+            </Button>
+            <Button variant="ghost" size="sm" onClick={logout}>
+              <LogOut className="h-4 w-4" /> Sign out
+            </Button>
+          </div>
         </div>
       </header>
 
